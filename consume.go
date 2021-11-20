@@ -108,17 +108,19 @@ func (consumer Consumer) StartConsuming(
 		return err
 	}
 
-	go func() {
-		for err := range consumer.chManager.notifyCancelOrClose {
-			consumer.logger.Printf("consume cancel/close handler triggered. err: %v", err)
-			consumer.startGoroutinesWithRetries(
-				handler,
-				queue,
-				routingKeys,
-				*options,
-			)
-		}
-	}()
+	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	//go func() {
+	//	for err := range consumer.chManager.notifyCancelOrClose {
+	//		consumer.logger.Printf("consume cancel/close handler triggered. err: %v", err)
+	//		consumer.startGoroutinesWithRetries(
+	//			handler,
+	//			queue,
+	//			routingKeys,
+	//			*options,
+	//		)
+	//	}
+	//}()
+
 	return nil
 }
 
