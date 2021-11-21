@@ -108,18 +108,17 @@ func (consumer Consumer) StartConsuming(
 		return err
 	}
 
-	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	//go func() {
-	//	for err := range consumer.chManager.notifyCancelOrClose {
-	//		consumer.logger.Printf("consume cancel/close handler triggered. err: %v", err)
-	//		consumer.startGoroutinesWithRetries(
-	//			handler,
-	//			queue,
-	//			routingKeys,
-	//			*options,
-	//		)
-	//	}
-	//}()
+	go func() {
+		for err := range consumer.chManager.notifyCancelOrClose {
+			consumer.logger.Printf("consume cancel/close handler triggered. err: %v", err)
+			consumer.startGoroutinesWithRetries(
+				handler,
+				queue,
+				routingKeys,
+				*options,
+			)
+		}
+	}()
 
 	return nil
 }
@@ -147,6 +146,7 @@ func (consumer Consumer) Disconnect() {
 // If you start many consumers, you should store the name of the consumers when creating them, such that you can
 // use them in a for to stop all the consumers.
 func (consumer Consumer) StopConsuming(consumerName string, noWait bool) {
+	close(consumer.chManager.notifyCancelOrClose)
 	consumer.chManager.channel.Cancel(consumerName, noWait)
 }
 
